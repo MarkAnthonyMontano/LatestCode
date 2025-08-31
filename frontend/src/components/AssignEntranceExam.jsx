@@ -43,7 +43,7 @@ const AssignEntranceExam = () => {
   const [message, setMessage] = useState("");
   const [roomQuota, setRoomQuota] = useState("");
   const [proctor, setProctor] = useState("");
-
+  const [roomNo, setRoomNo] = useState("");
 
 
 
@@ -104,6 +104,7 @@ const AssignEntranceExam = () => {
       await axios.post("http://localhost:5000/insert_exam_schedule", {
         day_description: day,
         room_description: sel.room_description,
+        room_no: roomNo,
         start_time: startTime,
         end_time: endTime,
         proctor,
@@ -160,7 +161,7 @@ const AssignEntranceExam = () => {
 
       <br />
 
-    
+
       <Box display="flex" sx={{ border: "2px solid maroon", borderRadius: "4px", overflow: "hidden" }}>
         {tabs.map((tab, index) => (
           <Link
@@ -248,7 +249,7 @@ const AssignEntranceExam = () => {
               {/* Room */}
               <Grid item xs={12}>
                 <Typography fontWeight={500}>
-                  Room
+                  Building
                 </Typography>
                 <TextField
                   select
@@ -271,33 +272,48 @@ const AssignEntranceExam = () => {
                 </TextField>
               </Grid>
 
-{/* Start Time */}
-<Grid item xs={12}>
-  <Typography fontWeight={500}>Start Time</Typography>
-  <TextField
-    fullWidth
-    type="time"
-    value={startTime}
-    onChange={(e) => setStartTime(e.target.value)}
-    inputProps={{ step: 300 }} // 5-min step
-    required
-    variant="outlined"
-  />
-</Grid>
+              <Grid item xs={12}>
+                <Typography fontWeight={500}>
+                  Room No.:
+                </Typography>
+                <TextField
+                  fullWidth
+                  value={roomNo}
+                  onChange={(e) => setRoomNo(e.target.value)}
+                  required
+                  variant="outlined"
+                  placeholder="Enter Room Number"
+                />
+              </Grid>
 
-{/* End Time */}
-<Grid item xs={12}>
-  <Typography fontWeight={500}>End Time</Typography>
-  <TextField
-    fullWidth
-    type="time"
-    value={endTime}
-    onChange={(e) => setEndTime(e.target.value)}
-    inputProps={{ step: 300 }}
-    required
-    variant="outlined"
-  />
-</Grid>
+
+              {/* Start Time */}
+              <Grid item xs={12}>
+                <Typography fontWeight={500}>Start Time</Typography>
+                <TextField
+                  fullWidth
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  inputProps={{ step: 300 }} // 5-min step
+                  required
+                  variant="outlined"
+                />
+              </Grid>
+
+              {/* End Time */}
+              <Grid item xs={12}>
+                <Typography fontWeight={500}>End Time</Typography>
+                <TextField
+                  fullWidth
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  inputProps={{ step: 300 }}
+                  required
+                  variant="outlined"
+                />
+              </Grid>
 
 
               {/* Proctor */}

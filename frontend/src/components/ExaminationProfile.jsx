@@ -6,16 +6,8 @@ import '../styles/Print.css'
 import { FcPrint } from "react-icons/fc";
 import Search from '@mui/icons-material/Search';
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import * as XLSX from "xlsx";
-import PersonIcon from "@mui/icons-material/Person";
-import DescriptionIcon from "@mui/icons-material/Description";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
-import SchoolIcon from "@mui/icons-material/School";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
-import HowToRegIcon from "@mui/icons-material/HowToReg";
-import ListAltIcon from "@mui/icons-material/ListAlt";
+import { QRCodeCanvas } from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 
 const ExaminationProfile = () => {
 
@@ -136,59 +128,29 @@ const ExaminationProfile = () => {
             setSelectedPerson(null);
             setPerson({
                 profile_img: "",
-
                 last_name: "",
                 first_name: "",
                 middle_name: "",
                 extension: "",
             });
-            // reset exam data
-            setExamData([
-                { TestArea: "English", RawScore: "", Percentage: "", User: "", DateCreated: "" },
-                { TestArea: "Science", RawScore: "", Percentage: "", User: "", DateCreated: "" },
-                { TestArea: "Filipino", RawScore: "", Percentage: "", User: "", DateCreated: "" },
-                { TestArea: "Math", RawScore: "", Percentage: "", User: "", DateCreated: "" },
-                { TestArea: "Abstract", RawScore: "", Percentage: "", User: "", DateCreated: "" },
-            ]);
             return;
         }
 
         const match = persons.find((p) => {
-            const fullString = `${p.first_name} ${p.middle_name} ${p.last_name} ${p.emailAddress}`.toLowerCase();
+            const fullString = `${p.first_name ?? ""} ${p.middle_name ?? ""} ${p.last_name ?? ""} ${p.emailAddress ?? ""}`.toLowerCase();
             const numberMatch = (p.applicant_number || '').toLowerCase() === searchQuery.toLowerCase();
             const textMatch = fullString.includes(searchQuery.toLowerCase());
             return numberMatch || textMatch;
         });
 
-
         if (match) {
             setSelectedPerson(match);
+            setPerson(match);   // optional: preload person data
         } else {
-            // no match found: clear all
             setSelectedPerson(null);
-            setPerson({
-                profile_img: "",
-
-                last_name: "",
-                first_name: "",
-                middle_name: "",
-                extension: "",
-            });
-
-            setExamData([
-                { TestArea: "English", RawScore: "", Percentage: "", User: "", DateCreated: "" },
-                { TestArea: "Science", RawScore: "", Percentage: "", User: "", DateCreated: "" },
-                { TestArea: "Filipino", RawScore: "", Percentage: "", User: "", DateCreated: "" },
-                { TestArea: "Math", RawScore: "", Percentage: "", User: "", DateCreated: "" },
-                { TestArea: "Abstract", RawScore: "", Percentage: "", User: "", DateCreated: "" },
-            ]);
-
-            setTotalScore(0);
-            setTotalPercentage(0);
-            setAvgScore(0);
-            setAvgPercentage(0);
         }
     }, [searchQuery, persons]);
+
 
     const divToPrintRef = useRef();
 
@@ -358,114 +320,18 @@ const ExaminationProfile = () => {
 
 
 
-    const handleChange = (index, field, value) => {
-        const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
-        const updated = [...examData];
-        updated[index][field] = value;
-        updated[index].DateCreated = today; // always Asia/Manila date
-        setExamData(updated);
-        calculateTotals(updated);
-    };
-
-
-    const handleImport = (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: "array" });
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const rows = XLSX.utils.sheet_to_json(sheet);
-
-            const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
-
-            const updated = examData.map((row) => {
-                const match = rows.find((r) => r.TestArea === row.TestArea);
-                return match
-                    ? {
-                        ...row,
-                        RawScore: match.RawScore || "",
-                        Percentage: match.Percentage || "",
-                        User: match.User || user,
-                        DateCreated: today, // Manila date
-                    }
-                    : row;
-            });
-
-            setExamData(updated);
-            calculateTotals(updated);
-        };
-        reader.readAsArrayBuffer(file);
-    };
-
-    // 🔹 Save to backend
-    const handleSave = async () => {
-        try {
-            const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
-            // ✅ Correct Manila date in YYYY-MM-DD
-
-            await axios.post("http://localhost:5000/exam/save", {
-                applicant_number: applicantNumber,
-                exams: examData.map((row) => ({
-                    subject: row.TestArea,
-                    raw_score: row.RawScore,
-                    percentage: row.Percentage,
-                    user: row.User || user,
-                    date_created: row.DateCreated || today, // use row’s value OR today
-                })),
-            });
-
-            alert("✅ Exam data saved!");
-        } catch (err) {
-            console.error("Save error:", err);
-            alert("❌ Failed to save exam data.");
-        }
-    };
-
-
-    // Totals
-
-
-    const [avgScore, setAvgScore] = useState(0);
-    const [avgPercentage, setAvgPercentage] = useState(0);
-
-    // function
-    // function
-    const calculateTotals = (data) => {
-        let scoreSum = 0;
-        let percentSum = 0;
-
-        data.forEach((row) => {
-            const score = parseFloat(row.RawScore) || 0;
-            const percent = parseFloat(row.Percentage) || 0;
-            scoreSum += score;
-            percentSum += percent;
-        });
-
-        setTotalScore(scoreSum);
-        setTotalPercentage(percentSum);
-
-        const divisor = data.length > 0 ? data.length : 1;
-
-        setAvgScore(scoreSum / divisor);
-        setAvgPercentage(percentSum / divisor);
-    };
-
-    // effect
-    useEffect(() => {
-        if (examData && examData.length > 0) {
-            calculateTotals(examData);
-        }
-    }, [examData]);
-
+    const [examSchedule, setExamSchedule] = useState(null);
 
     useEffect(() => {
-        if (examData && examData.length > 0) {
-            calculateTotals(examData);
+        if (selectedPerson?.applicant_number) {
+            axios.get(`http://localhost:5000/api/exam-schedule/${selectedPerson.applicant_number}`)
+                .then(res => setExamSchedule(res.data))
+                .catch(err => {
+                    console.error("Error fetching exam schedule:", err);
+                    setExamSchedule(null);
+                });
         }
-    }, [examData]);
+    }, [selectedPerson]);
 
 
 
@@ -515,7 +381,10 @@ const ExaminationProfile = () => {
 
                 <br />
 
-              
+
+                <br />
+
+
                 <Box display="flex" sx={{ border: "2px solid maroon", borderRadius: "4px", overflow: "hidden" }}>
                     {tabs.map((tab, index) => (
                         <Link
@@ -548,6 +417,34 @@ const ExaminationProfile = () => {
 
 
                 <div style={{ height: "20px" }}></div>
+                <TableContainer component={Paper} sx={{ width: '100%', }}>
+                    <Table>
+                        <TableHead sx={{ backgroundColor: '#6D2323' }}>
+                            <TableRow>
+                                {/* Left cell: Applicant ID */}
+                                <TableCell sx={{ color: 'white', fontSize: '20px', fontFamily: 'Arial Black', border: 'none' }}>
+                                    Applicant ID:&nbsp;
+                                    <span style={{ fontFamily: "Arial", fontWeight: "normal", textDecoration: "underline" }}>
+                                        {selectedPerson?.applicant_number || "N/A"}
+                                    </span>
+                                </TableCell>
+
+                                {/* Right cell: Applicant Name, right-aligned */}
+                                <TableCell
+                                    align="right"
+                                    sx={{ color: 'white', fontSize: '20px', fontFamily: 'Arial Black', border: 'none' }}
+                                >
+                                    Applicant Name:&nbsp;
+                                    <span style={{ fontFamily: "Arial", fontWeight: "normal", textDecoration: "underline" }}>
+                                        {selectedPerson?.last_name?.toUpperCase()}, {selectedPerson?.first_name?.toUpperCase()}{" "}
+                                        {selectedPerson?.middle_name?.toUpperCase()} {selectedPerson?.extension_name?.toUpperCase() || ""}
+                                    </span>
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                    </Table>
+                </TableContainer>
+
 
                 <button
                     onClick={handlePrintClick}
@@ -681,8 +578,8 @@ const ExaminationProfile = () => {
                                                         >
                                                             <div
                                                                 style={{
-                                                                    width: "4.58cm",
-                                                                    height: "4.58cm",
+                                                                    width: "4.70cm",
+                                                                    height: "4.70cm",
                                                                     marginRight: "10px",
                                                                     display: "flex",
                                                                     justifyContent: "center",
@@ -888,55 +785,159 @@ const ExaminationProfile = () => {
                                         <td colSpan={20}>
                                             <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
                                                 <label style={{ fontWeight: "bold", whiteSpace: "nowrap", marginRight: "10px" }}>Date of Exam:</label>
-                                                <span style={{ flexGrow: 1, borderBottom: "1px solid black", height: "1.2em" }}></span>
+                                                <span style={{ flexGrow: 1, borderBottom: "1px solid black", height: "1.2em", fontFamily: "Arial" }}>
+                                                    {examSchedule?.date_of_exam}
+                                                </span>
                                             </div>
                                         </td>
                                         <td colSpan={20}>
                                             <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
-                                                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", marginRight: "10px" }}>Time :</label>
-                                                <span style={{ flexGrow: 1, borderBottom: "1px solid black", height: "1.2em" }}></span>
+                                                <label
+                                                    style={{
+                                                        fontWeight: "bold",
+                                                        whiteSpace: "nowrap",
+                                                        marginRight: "10px",
+                                                    }}
+                                                >
+                                                    Time :
+                                                </label>
+                                                <span
+                                                    style={{
+                                                        flexGrow: 1,
+                                                        borderBottom: "1px solid black",
+                                                        height: "1.2em",
+                                                        fontFamily: "Arial",
+                                                    }}
+                                                >
+                                                    {examSchedule
+                                                        ? new Date(`1970-01-01T${examSchedule.start_time}`).toLocaleTimeString(
+                                                            "en-US",
+                                                            { hour: "numeric", minute: "2-digit", hour12: true }
+                                                        )
+                                                        : ""}
+                                                </span>
                                             </div>
                                         </td>
+
                                     </tr>
 
                                     <tr style={{ fontFamily: "Times New Roman", fontSize: "15px" }}>
                                         <td colSpan={20}>
-                                            <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
-                                                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", marginRight: "10px" }}>Bldg. :</label>
-                                                <span style={{ flexGrow: 1, borderBottom: "1px solid black", height: "1.2em" }}></span>
+                                            <div style={{ display: "flex", alignItems: "center", width: "100%", marginTop: "-65px" }}>
+                                                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", marginRight: "10px" }}>
+                                                    Bldg. :
+                                                </label>
+                                                <span
+                                                    style={{
+                                                        flexGrow: 1,
+                                                        borderBottom: "1px solid black",
+                                                        height: "1.2em",
+                                                        fontFamily: "Arial",
+                                                    }}
+                                                >
+                                                    {examSchedule?.room_description || ""}
+                                                </span>
                                             </div>
                                         </td>
+
+                                        {/* Room No. + QR side by side */}
                                         <td colSpan={20}>
-                                            <div style={{ display: "flex", alignItems: "center", width: "60%" }}>
-                                                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", marginRight: "10px" }}>Room No. :</label>
-                                                <span style={{ flexGrow: 1, borderBottom: "1px solid black", height: "1.2em" }}></span>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    width: "100%",
+                                                    justifyContent: "space-between", // space text & QR
+                                                }}
+                                            >
+                                                <div style={{ display: "flex", alignItems: "center", marginTop: "-105px" }}>
+                                                    <label
+                                                        style={{
+                                                            fontWeight: "bold",
+                                                            whiteSpace: "nowrap",
+                                                            marginRight: "10px",
+                                                        }}
+                                                    >
+                                                        Room No. :
+                                                    </label>
+                                                    <span
+                                                        style={{
+                                                            flexGrow: 1,
+                                                            borderBottom: "1px solid black",
+                                                            height: "1.2em",
+                                                            fontFamily: "Arial",
+                                                            marginRight: "20px",
+                                                            width: "140px"
+                                                        }}
+                                                    >
+                                                        {examSchedule?.room_no || ""}
+                                                    </span>
+                                                </div>
+
+                                                {/* ✅ QR Code placed beside Room No. */}
+                                                {selectedPerson?.applicant_number && (
+                                                    <QRCodeSVG
+                                                        value={`http://localhost:5173/examination_profile/${selectedPerson.applicant_number}`}
+                                                        size={140} // adjust size
+                                                        level={"H"}
+                                                        includeMargin={true}
+                                                    />
+                                                )}
+
                                             </div>
                                         </td>
                                     </tr>
 
+
                                     <tr style={{ fontFamily: "Times New Roman", fontSize: "15px" }}>
                                         <td colSpan={20}>
-                                            <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+                                            <div style={{ display: "flex", alignItems: "center", width: "100%", marginTop: "-110px" }}>
                                                 <label style={{ fontWeight: "bold", whiteSpace: "nowrap", marginRight: "10px" }}>Scheduled by:</label>
-                                                <span style={{ flexGrow: 1, borderBottom: "1px solid black", height: "1.2em" }}></span>
+                                                <span style={{ flexGrow: 1, borderBottom: "1px solid black", height: "1.2em", fontFamily: "Arial" }}>
+                                                    {examSchedule?.proctor || ""}
+                                                </span>
                                             </div>
                                         </td>
-
                                     </tr>
+
                                     <tr style={{ fontFamily: "Times New Roman", fontSize: "15px" }}>
                                         <td colSpan={20}>
-                                            <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
-                                                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", marginRight: "10px" }}>Date:</label>
-                                                <span style={{ flexGrow: 1, borderBottom: "1px solid black", height: "1.2em" }}></span>
+                                            <div style={{ display: "flex", alignItems: "center", width: "100%", marginTop: "-90px" }}>
+                                                <label
+                                                    style={{
+                                                        fontWeight: "bold",
+                                                        whiteSpace: "nowrap",
+                                                        marginRight: "10px",
+                                                    }}
+                                                >
+                                                    Date:
+                                                </label>
+                                                <span
+                                                    style={{
+                                                        flexGrow: 1,
+                                                        borderBottom: "1px solid black",
+                                                        height: "1.2em",
+                                                        fontFamily: "Arial",
+                                                    }}
+                                                >
+                                                    {examSchedule?.schedule_created_at
+                                                        ? new Date(examSchedule.schedule_created_at).toLocaleDateString("en-US", {
+                                                            month: "long",
+                                                            day: "numeric",
+                                                            year: "numeric",
+                                                        })
+                                                        : ""}
+                                                </span>
                                             </div>
                                         </td>
 
                                     </tr>
+
+
                                 </tbody>
                             </table>
 
 
-                            <div style={{ height: "70px" }}></div>
 
                             <table
                                 className="student-table"

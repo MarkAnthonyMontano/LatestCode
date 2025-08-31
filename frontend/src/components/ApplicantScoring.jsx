@@ -629,17 +629,18 @@ th.name-col {
             };
 
             // 3️⃣ Always attach logged-in user id
-            const payload = {
-                applicant_number: person.applicant_number,
-                ...updatedScores,
-                final_rating:
-                    Number(updatedScores.english || 0) +
-                    Number(updatedScores.science || 0) +
-                    Number(updatedScores.filipino || 0) +
-                    Number(updatedScores.math || 0) +
-                    Number(updatedScores.abstract || 0),
-                user: localStorage.getItem("user_id"), // ✅ always send current user
-            };
+          const payload = {
+  applicant_number: person.applicant_number,
+  ...updatedScores,
+  final_rating:
+    Number(updatedScores.english || 0) +
+    Number(updatedScores.science || 0) +
+    Number(updatedScores.filipino || 0) +
+    Number(updatedScores.math || 0) +
+    Number(updatedScores.abstract || 0),
+  user: localStorage.getItem("email"), // ✅ Always send email
+};
+
 
             // 4️⃣ Auto-save to backend
             await axios.post("http://localhost:5000/exam/save", payload);

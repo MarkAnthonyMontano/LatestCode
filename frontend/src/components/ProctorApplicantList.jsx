@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import {
   Box,
@@ -20,13 +20,13 @@ import EaristLogo from "../assets/EaristLogo.png";
 
 const ProctorApplicantList = () => {
 
-     const tabs = [
-        { label: "Room Scheduling", to: "/assign_entrance_exam" },
-        { label: "Applicant's Scheduling", to: "/assign_schedule_applicant" },
-        { label: "Examination Profile", to: "/examination_profile" },
-        { label: "Applicant's Score", to: "/applicant_scoring" },
-        { label: "Proctor's Applicant List", to: "/proctor_applicant_list" },
-    ];
+  const tabs = [
+    { label: "Room Scheduling", to: "/assign_entrance_exam" },
+    { label: "Applicant's Scheduling", to: "/assign_schedule_applicant" },
+    { label: "Examination Profile", to: "/examination_profile" },
+    { label: "Applicant's Score", to: "/applicant_scoring" },
+    { label: "Proctor's Applicant List", to: "/proctor_applicant_list" },
+  ];
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(3);
   const [clickedSteps, setClickedSteps] = useState(Array(tabs.length).fill(false));
@@ -229,15 +229,15 @@ th {
 
 
   return (
-    <Box sx={{ height: 'calc(100vh - 150px)', overflowY: 'auto', pr: 1, p: 2 }}>
+    <Box sx={{ height: 'calc(100vh - 150px)', overflowY: 'auto', pr: 1,  }}>
       {/* Header with Search aligned right */}
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          mt: 2,
           mb: 2,
           px: 2,
         }}
@@ -306,44 +306,44 @@ th {
       )}
       <br />
 
-        <Box display="flex" sx={{ border: "2px solid maroon", borderRadius: "4px", overflow: "hidden" }}>
-            {tabs.map((tab, index) => (
-              <Link
-                key={index}
-                to={tab.to}
-                style={{ textDecoration: "none", flex: 1 }}
-              >
-                <Box
-                  sx={{
-                    backgroundColor: "#6D2323",
-                    padding: "16px",
-                    color: "#ffffff",
-                    textAlign: "center",
-                    cursor: "pointer",
-                    borderRight: index !== tabs.length - 1 ? "2px solid white" : "none", // changed here
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      backgroundColor: "#f9f9f9",
-                      color: "#6D2323", // font color on hover
-                    },
-                  }}
-                >
-                  <Typography sx={{ color: "inherit", fontWeight: "bold", wordBreak: "break-word" }}>
-                    {tab.label}
-                  </Typography>
-                </Box>
-              </Link>
-            ))}
-          </Box>
-    
+      <Box display="flex" sx={{ border: "2px solid maroon", borderRadius: "4px", overflow: "hidden" }}>
+        {tabs.map((tab, index) => (
+          <Link
+            key={index}
+            to={tab.to}
+            style={{ textDecoration: "none", flex: 1 }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "#6D2323",
+                padding: "16px",
+                color: "#ffffff",
+                textAlign: "center",
+                cursor: "pointer",
+                borderRight: index !== tabs.length - 1 ? "2px solid white" : "none", // changed here
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  backgroundColor: "#f9f9f9",
+                  color: "#6D2323", // font color on hover
+                },
+              }}
+            >
+              <Typography sx={{ color: "inherit", fontWeight: "bold", wordBreak: "break-word" }}>
+                {tab.label}
+              </Typography>
+            </Box>
+          </Link>
+        ))}
+      </Box>
 
+      <br />
       {proctor && (
         <Box
           sx={{
             display: "flex",
             gap: 4,
             flexWrap: "wrap",
-        
+
             mb: 2,
             fontSize: "16px",
           }}

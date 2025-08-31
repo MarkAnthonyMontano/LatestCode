@@ -49,20 +49,20 @@ const CollegeApproval = () => {
     const [clickedSteps, setClickedSteps] = useState(Array(tabs.length).fill(false));
     const [explicitSelection, setExplicitSelection] = useState(false);
 
-       const fetchUploadsByApplicantNumber = async (applicant_number) => {
-            if (!applicant_number) return;
-            try {
-                const res = await axios.get(`http://localhost:5000/uploads/by-applicant/${applicant_number}`);
-                // ✅ filter only vaccine uploads
-                const vaccineUploads = res.data.filter(u =>
-                    u.description.toLowerCase().includes("vaccine")
-                );
-                setUploads(vaccineUploads);
-            } catch (err) {
-                console.error('Fetch uploads failed:', err);
-            }
-        };
-    
+    const fetchUploadsByApplicantNumber = async (applicant_number) => {
+        if (!applicant_number) return;
+        try {
+            const res = await axios.get(`http://localhost:5000/uploads/by-applicant/${applicant_number}`);
+            // ✅ filter only vaccine uploads
+            const vaccineUploads = res.data.filter(u =>
+                u.description.toLowerCase().includes("vaccine")
+            );
+            setUploads(vaccineUploads);
+        } catch (err) {
+            console.error('Fetch uploads failed:', err);
+        }
+    };
+
 
     const fetchByPersonId = async (personID) => {
         try {
@@ -403,72 +403,72 @@ const CollegeApproval = () => {
                 <br />
 
 
-              <Box
-  sx={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    mt: 2,
-    flexWrap: "wrap", // so it wraps on smaller screens
-  }}
->
-  {tabs.map((tab, index) => (
-    <React.Fragment key={index}>
-      {/* Step Card */}
-      <Card
-        onClick={() => handleStepClick(index, tab.to)}
-        sx={{
-          flex: 1,
-          maxWidth: `${100 / tabs.length}%`, // evenly fit in one row
-          height: 100,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          borderRadius: 2,
-          border: "2px solid #6D2323",
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                        mt: 2,
+                        flexWrap: "wrap", // so it wraps on smaller screens
+                    }}
+                >
+                    {tabs.map((tab, index) => (
+                        <React.Fragment key={index}>
+                            {/* Step Card */}
+                            <Card
+                                onClick={() => handleStepClick(index, tab.to)}
+                                sx={{
+                                    flex: 1,
+                                    maxWidth: `${100 / tabs.length}%`, // evenly fit in one row
+                                    height: 100,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                    borderRadius: 2,
+                                    border: "2px solid #6D2323",
 
-          backgroundColor: activeStep === index ? "#6D2323" : "#E8C999",
-          color: activeStep === index ? "#fff" : "#000",
-          boxShadow:
-            activeStep === index
-              ? "0px 4px 10px rgba(0,0,0,0.3)"
-              : "0px 2px 6px rgba(0,0,0,0.15)",
-          transition: "0.3s ease",
-          "&:hover": {
-            backgroundColor: activeStep === index ? "#5a1c1c" : "#f5d98f",
-          },
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Box sx={{ fontSize: 32, mb: 0.5 }}>{tab.icon}</Box>
-          <Typography
-            sx={{ fontSize: 14, fontWeight: "bold", textAlign: "center" }}
-          >
-            {tab.label}
-          </Typography>
-        </Box>
-      </Card>
+                                    backgroundColor: activeStep === index ? "#6D2323" : "#E8C999",
+                                    color: activeStep === index ? "#fff" : "#000",
+                                    boxShadow:
+                                        activeStep === index
+                                            ? "0px 4px 10px rgba(0,0,0,0.3)"
+                                            : "0px 2px 6px rgba(0,0,0,0.15)",
+                                    transition: "0.3s ease",
+                                    "&:hover": {
+                                        backgroundColor: activeStep === index ? "#5a1c1c" : "#f5d98f",
+                                    },
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <Box sx={{ fontSize: 32, mb: 0.5 }}>{tab.icon}</Box>
+                                    <Typography
+                                        sx={{ fontSize: 14, fontWeight: "bold", textAlign: "center" }}
+                                    >
+                                        {tab.label}
+                                    </Typography>
+                                </Box>
+                            </Card>
 
-      {/* Spacer instead of line */}
-      {index < tabs.length - 1 && (
-        <Box
-          sx={{
-            flex: 0.1,
-            mx: 1, // keeps spacing between cards
-          }}
-        />
-      )}
-    </React.Fragment>
-  ))}
-</Box>
+                            {/* Spacer instead of line */}
+                            {index < tabs.length - 1 && (
+                                <Box
+                                    sx={{
+                                        flex: 0.1,
+                                        mx: 1, // keeps spacing between cards
+                                    }}
+                                />
+                            )}
+                        </React.Fragment>
+                    ))}
+                </Box>
 
                 <br />
                 {/* Applicant ID and Name */}
@@ -520,60 +520,52 @@ const CollegeApproval = () => {
                     <Box
                         sx={{
                             display: "flex",
-                            alignItems: "center", // align label and input vertically
-                            gap: 2,
+                            justifyContent: "space-between", // pushes Program left, Image right
+                            alignItems: "center",
                             p: 2,
-                           
+                            gap: 2,
                         }}
                     >
-                        <Typography
-                            sx={{
-                                minWidth: "100px", // adjust label width so it aligns nicely
+                        {/* Left side: Program */}
+                        <Box sx={{ flex: 1 }}>
+                            <Typography
+                                sx={{
+                                    fontSize: "16px",
+                                    fontWeight: "bold",
+                                    mb: 1,
+                                }}
+                            >
+                                Program:
+                            </Typography>
 
-                                fontSize: "16px",
-                                fontWeight: "bold",
-                                
-                            }}
-                        >
-                            Program:
-                        </Typography>
+                            <TextField
+                                select
+                                label="Course & Major"
+                                value={person?.program ?? ""}
+                                onChange={(e) =>
+                                    setPerson((prev) => ({
+                                        ...prev,
+                                        program: e.target.value,
+                                    }))
+                                }
+                                fullWidth
+                                style={{width: "750px"}}
+                                size="small"
+                                SelectProps={{ readOnly: true }}
+                            >
+                                {curriculumOptions.length > 0 ? (
+                                    curriculumOptions.map((item) => (
+                                        <MenuItem key={item.curriculum_id} value={item.curriculum_id}>
+                                            {item.program_description}
+                                        </MenuItem>
+                                    ))
+                                ) : (
+                                    <MenuItem disabled>Loading...</MenuItem>
+                                )}
+                            </TextField>
+                        </Box>
 
-                        <TextField
-                            select
-                            label="Course & Major"
-                            value={person?.program ?? ""}
-                            onChange={(e) =>
-                                setPerson((prev) => ({
-                                    ...prev,
-                                    program: e.target.value,
-                                }))
-                            }
-                            fullWidth
-                            size="small"
-                            SelectProps={{
-                                readOnly: true,   // This makes it behave like read-only
-                            }}
-                            sx={{
-                                fontFamily: "Times New Roman",
-                                fontSize: "14px",
-                                fontWeight: "Normal",
-                                width: "700px",
-                                 marginRight: "250px",
-                            }}
-                        >
-                            {curriculumOptions.length > 0 ? (
-                                curriculumOptions.map((item) => (
-                                    <MenuItem key={item.curriculum_id} value={item.curriculum_id}>
-                                        {item.program_description}
-                                    </MenuItem>
-                                ))
-                            ) : (
-                                <MenuItem disabled>Loading...</MenuItem>
-                            )}
-                        </TextField>
-
-
-                        {/* Profile Image (Right) */}
+                        {/* Right side: Profile Image */}
                         {person.profile_img && (
                             <Box
                                 sx={{
@@ -583,18 +575,18 @@ const CollegeApproval = () => {
                                     borderRadius: "4px",
                                     overflow: "hidden",
                                     mt: -9,
-                                    
-                                
+                                    flexShrink: 0, // keeps image from shrinking
                                 }}
                             >
                                 <img
                                     src={`http://localhost:5000/uploads/${person.profile_img}`}
                                     alt="Profile"
-                                    style={{ width: "100%",  height: "100%", objectFit: "cover" }}
+                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                 />
                             </Box>
                         )}
                     </Box>
+
 
                     {/* Table Section (centered only) */}
                     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", p: 2 }}>
