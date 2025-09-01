@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 20, 2025 at 10:56 PM
+-- Generation Time: Sep 01, 2025 at 06:46 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -1911,24 +1911,25 @@ CREATE TABLE `user_accounts` (
   `role` varchar(255) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `status` int(11) DEFAULT NULL
+  `status` int(11) DEFAULT NULL,
+  `department` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user_accounts`
 --
 
-INSERT INTO `user_accounts` (`id`, `person_id`, `role`, `email`, `password`, `status`) VALUES
-(1, 20, 'registrar', 'markmontano522@gmail.com', '$2b$10$1z0TPyKFo6qtCrVAaA1D4e3qANATLI.pyTLqZinmmT8sF2zMALkDu', NULL),
-(2, 4, 'student', 'ardenhello@gmail.com', '$2b$10$FR.08E3pPApsIbU0uQ3H9.IbjjWvc70cwRk4Bu2BwBwSFLGCp0o4.', NULL),
-(12, 13, 'student', 'markmontao2671@gmail.com', '$2b$10$C3aCAR68k/gwdW87qSijAOt1peY6a97IO/VtuZDSfrU2wGIINndpG', NULL),
-(13, 14, 'student', 'montano.ma.bsinfotech@gmail.com', '$2b$10$22emRbSCyIjPpe7zr2jGD.ThJz18wZ5lHyFTvhmN6Aa1iZnX9tG4W', 1),
-(14, 15, 'student', 'james@gmail.com', '$2b$10$Co4BlhU8i0/a4lLQ/cp7u.9ZdIuWgkZJkVbMmi/aqVpUhTd/akjtG', NULL),
-(15, 18, 'student', 'markmontano522@gmail.com', '$2b$10$LpZY2sIonsckF6ysaHwDHu0FoNxM2XMwZZCnP.snpGd4.hSlZIv8G', NULL),
-(17, 92, 'student', 'mecasio123@gmail.com', '$2b$10$CHRiC06CY6QQS4ZpiBlJYePp1TjQti.BlwIXJkc83ojxPM3H11vG.', NULL),
-(18, 1, 'student', 'markmontano062612@gmail.com', '$2b$10$TjYekgXIRZbIau.fHxRseO44zSREQeJUHoRizlJpPKh1W7JkBZ9NC', NULL),
-(19, 2, 'student', 'markmontano0626@gmail.com', '$2b$10$V8F7mMR2iYtSmRq/al/KOOqT.vXOEL9eaRUTSaDLJxLRq52WgZRZ2', NULL),
-(20, 204, 'student', 'markmontano0626@gmail.com', '$2b$10$lDL/0s7dOdohXxChj2EegOXYTKi2FV1IAIKqso4xT7ymlP52Dm5om', NULL);
+INSERT INTO `user_accounts` (`id`, `person_id`, `role`, `email`, `password`, `status`, `department`) VALUES
+(1, 20, 'registrar', 'markmontano522@gmail.com', '$2b$10$1z0TPyKFo6qtCrVAaA1D4e3qANATLI.pyTLqZinmmT8sF2zMALkDu', NULL, NULL),
+(2, 4, 'student', 'ardenhello@gmail.com', '$2b$10$FR.08E3pPApsIbU0uQ3H9.IbjjWvc70cwRk4Bu2BwBwSFLGCp0o4.', NULL, NULL),
+(12, 13, 'student', 'markmontao2671@gmail.com', '$2b$10$C3aCAR68k/gwdW87qSijAOt1peY6a97IO/VtuZDSfrU2wGIINndpG', NULL, NULL),
+(13, 14, 'student', 'montano.ma.bsinfotech@gmail.com', '$2b$10$22emRbSCyIjPpe7zr2jGD.ThJz18wZ5lHyFTvhmN6Aa1iZnX9tG4W', 1, NULL),
+(14, 15, 'student', 'james@gmail.com', '$2b$10$Co4BlhU8i0/a4lLQ/cp7u.9ZdIuWgkZJkVbMmi/aqVpUhTd/akjtG', NULL, NULL),
+(15, 18, 'student', 'markmontano522@gmail.com', '$2b$10$LpZY2sIonsckF6ysaHwDHu0FoNxM2XMwZZCnP.snpGd4.hSlZIv8G', NULL, NULL),
+(17, 92, 'student', 'mecasio123@gmail.com', '$2b$10$CHRiC06CY6QQS4ZpiBlJYePp1TjQti.BlwIXJkc83ojxPM3H11vG.', NULL, NULL),
+(18, 1, 'student', 'markmontano062612@gmail.com', '$2b$10$TjYekgXIRZbIau.fHxRseO44zSREQeJUHoRizlJpPKh1W7JkBZ9NC', NULL, NULL),
+(19, 2, 'student', 'markmontano0626@gmail.com', '$2b$10$V8F7mMR2iYtSmRq/al/KOOqT.vXOEL9eaRUTSaDLJxLRq52WgZRZ2', NULL, NULL),
+(20, 204, 'student', 'markmontano0626@gmail.com', '$2b$10$lDL/0s7dOdohXxChj2EegOXYTKi2FV1IAIKqso4xT7ymlP52Dm5om', NULL, NULL);
 
 -- --------------------------------------------------------
 
