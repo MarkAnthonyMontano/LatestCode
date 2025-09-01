@@ -60,23 +60,23 @@ const ApplicantList = () => {
 
 
 
-    
-         const tabs = [
-            { label: "Room Scheduling", to: "/assign_entrance_exam" },
-            { label: "Applicant's Scheduling", to: "/assign_schedule_applicant" },
-            { label: "Examination Profile", to: "/examination_profile" },
-            { label: "Applicant's Score", to: "/applicant_scoring" },
-            { label: "Proctor's Applicant List", to: "/proctor_applicant_list" },
-        ];
-      const navigate = useNavigate();
-      const [activeStep, setActiveStep] = useState(3);
-      const [clickedSteps, setClickedSteps] = useState(Array(tabs.length).fill(false));
-    
-    
-      const handleStepClick = (index, to) => {
+
+    const tabs = [
+        { label: "Room Scheduling", to: "/assign_entrance_exam" },
+        { label: "Applicant's Scheduling", to: "/assign_schedule_applicant" },
+        { label: "Examination Profile", to: "/examination_profile" },
+        { label: "Applicant's Score", to: "/applicant_scoring" },
+        { label: "Proctor's Applicant List", to: "/proctor_applicant_list" },
+    ];
+    const navigate = useNavigate();
+    const [activeStep, setActiveStep] = useState(3);
+    const [clickedSteps, setClickedSteps] = useState(Array(tabs.length).fill(false));
+
+
+    const handleStepClick = (index, to) => {
         setActiveStep(index);
         navigate(to); // this will actually change the page
-      };
+    };
 
 
     useEffect(() => {
@@ -629,17 +629,17 @@ th.name-col {
             };
 
             // 3️⃣ Always attach logged-in user id
-          const payload = {
-  applicant_number: person.applicant_number,
-  ...updatedScores,
-  final_rating:
-    Number(updatedScores.english || 0) +
-    Number(updatedScores.science || 0) +
-    Number(updatedScores.filipino || 0) +
-    Number(updatedScores.math || 0) +
-    Number(updatedScores.abstract || 0),
-  user: localStorage.getItem("email"), // ✅ Always send email
-};
+            const payload = {
+                applicant_number: person.applicant_number,
+                ...updatedScores,
+                final_rating:
+                    Number(updatedScores.english || 0) +
+                    Number(updatedScores.science || 0) +
+                    Number(updatedScores.filipino || 0) +
+                    Number(updatedScores.math || 0) +
+                    Number(updatedScores.abstract || 0),
+                user: localStorage.getItem("email"), // ✅ Always send email
+            };
 
 
             // 4️⃣ Auto-save to backend
@@ -727,37 +727,37 @@ th.name-col {
 
             <hr style={{ border: "1px solid #ccc", width: "100%" }} />
             <div style={{ height: "20px" }}></div>
-          
-                  <Box display="flex" sx={{ border: "2px solid maroon", borderRadius: "4px", overflow: "hidden" }}>
-                      {tabs.map((tab, index) => (
-                        <Link
-                          key={index}
-                          to={tab.to}
-                          style={{ textDecoration: "none", flex: 1 }}
-                        >
-                          <Box
+
+            <Box display="flex" sx={{ border: "2px solid maroon", borderRadius: "4px", overflow: "hidden" }}>
+                {tabs.map((tab, index) => (
+                    <Link
+                        key={index}
+                        to={tab.to}
+                        style={{ textDecoration: "none", flex: 1 }}
+                    >
+                        <Box
                             sx={{
-                              backgroundColor: "#6D2323",
-                              padding: "16px",
-                              color: "#ffffff",
-                              textAlign: "center",
-                              cursor: "pointer",
-                              borderRight: index !== tabs.length - 1 ? "2px solid white" : "none", // changed here
-                              transition: "all 0.3s ease",
-                              "&:hover": {
-                                backgroundColor: "#f9f9f9",
-                                color: "#6D2323", // font color on hover
-                              },
+                                backgroundColor: "#6D2323",
+                                padding: "16px",
+                                color: "#ffffff",
+                                textAlign: "center",
+                                cursor: "pointer",
+                                borderRight: index !== tabs.length - 1 ? "2px solid white" : "none", // changed here
+                                transition: "all 0.3s ease",
+                                "&:hover": {
+                                    backgroundColor: "#f9f9f9",
+                                    color: "#6D2323", // font color on hover
+                                },
                             }}
-                          >
+                        >
                             <Typography sx={{ color: "inherit", fontWeight: "bold", wordBreak: "break-word" }}>
-                              {tab.label}
+                                {tab.label}
                             </Typography>
-                          </Box>
-                        </Link>
-                      ))}
-                    </Box>
-              
+                        </Box>
+                    </Link>
+                ))}
+            </Box>
+
             <div style={{ height: "20px" }}></div>
 
 
