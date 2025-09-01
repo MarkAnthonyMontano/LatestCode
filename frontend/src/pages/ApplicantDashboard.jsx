@@ -1,108 +1,37 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import "../styles/TempStyles.css";
+import axios from "axios";
 import {
-  Container,
   Box,
+  Grid,
+  Card,
+  CardContent,
   Typography,
-  Card, CardContent
-
+  Divider,
+  Stack,
+  Avatar,
 } from "@mui/material";
-
-import { TbArrowBadgeRightFilled as ArrowIcon } from "react-icons/tb";
-
-// Step data
-const steps = [
-  { label: "Application Status", color: "#AC3B9A", style: { marginRight: "10px" } },
-  { label: "Document Submission", color: "#4B83C3", style: { marginRight: "10px" } },
-  { label: "Entrance Examination", color: "#F0C03F", style: { marginRight: "10px" } },
-  { label: "Interview", color: "#7AC142", style: { marginRight: "20px" } },
-  { label: "Verification", color: "#50BEBE", style: { marginRight: "10px" } },
-  { label: "College Approval", color: "#E43E3E", style: { marginRight: "10px" } },
-  { label: "Medical Submission", color: "#2B3F73", style: { marginRight: "10px" } },
-  { label: "Applicant Status", color: "#B33A3A", style: { marginRight: "10px" } },
-];
-
-const StepIcon = ({ label, color }) => (
-  <Box
-    sx={{
-      width: "100px",
-      height: "100px",
-      position: "relative",
-      color: "white",
-      marginLeft: "20px",
-    }}
-  >
-    <ArrowIcon
-      style={{
-        color: color,
-        width: "100%",
-        height: "100%",
-        transform: "scaleX(3.5) scaleY(1.75)",
-      }}
-    />
-    <Box
-      sx={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "flex-start", // aligns text left inside chevron
-        paddingLeft: "20px", // ✅ pushes the text right by 15px
-        fontWeight: "bold",
-        fontSize: "14px",
-        textAlign: "left",
-        pointerEvents: "none",
-        whiteSpace: "normal",
-      }}
-    >
-      {label}
-    </Box>
-  </Box>
-);
-
+import PersonIcon from "@mui/icons-material/Person";
+import DescriptionIcon from "@mui/icons-material/Description";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import EventIcon from "@mui/icons-material/Event";
+import SchoolIcon from "@mui/icons-material/School";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 
 const ApplicantDashboard = () => {
   const [userID, setUserID] = useState("");
   const [user, setUser] = useState("");
   const [userRole, setUserRole] = useState("");
   const [applicantID, setApplicantID] = useState("");
-
   const [person, setPerson] = useState({
-
     last_name: "",
     first_name: "",
     middle_name: "",
     extension: "",
-
+    profile_image: "",
   });
 
-  // Calls the backend to fetch the applicant number using personID
-  const fetchApplicantNumber = async (personID) => {
-    try {
-      const res = await axios.get(`http://localhost:5000/api/applicant_number/${personID}`);
-      if (res.data && res.data.applicant_number) {
-        setApplicantID(res.data.applicant_number);
-      }
-    } catch (error) {
-      console.error("Failed to fetch applicant number:", error);
-    }
-  };
-
-
-  const fetchPersonData = async (id) => {
-    try {
-      const res = await axios.get(`http://localhost:5000/api/person/${id}`);
-      setPerson(res.data); // make sure backend returns the correct format
-    } catch (error) {
-      console.error("Failed to fetch person:", error);
-    }
-  };
-
-  // do not alter
   useEffect(() => {
     const storedUser = localStorage.getItem("email");
     const storedRole = localStorage.getItem("role");
@@ -115,7 +44,7 @@ const ApplicantDashboard = () => {
 
       if (storedRole === "applicant") {
         fetchPersonData(storedID);
-        fetchApplicantNumber(storedID); // ✅ fetch applicant number too
+        fetchApplicantNumber(storedID);
       } else {
         window.location.href = "/login";
       }
@@ -124,248 +53,229 @@ const ApplicantDashboard = () => {
     }
   }, []);
 
+  const fetchApplicantNumber = async (personID) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/applicant_number/${personID}`
+      );
+      if (res.data && res.data.applicant_number) {
+        setApplicantID(res.data.applicant_number);
+      }
+    } catch (error) {
+      console.error("Failed to fetch applicant number:", error);
+    }
+  };
+
+  const fetchPersonData = async (id) => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/person/${id}`);
+      setPerson(res.data);
+    } catch (error) {
+      console.error("Failed to fetch person:", error);
+    }
+  };
+
+  const formattedDate = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 
   return (
-
-    <Box sx={{ height: "calc(100vh - 150px)", overflowY: "auto", paddingRight: 1, backgroundColor: "transparent" }}>
-
-      <Container>
-        <h1 style={{ fontSize: "50px", fontWeight: "bold", textAlign: "center", color: "maroon", marginTop: "25px" }}>APPLICANT DASHBOARD</h1>
-        <div style={{ textAlign: "center" }}>Complete the applicant form to secure your place for the upcoming academic year at EARIST.</div>
-      </Container>
-
-      <div style={{ height: "15px" }}></div>
-
-      <Box
-        sx={{
-          backgroundColor: "#6D2323",
-          border: "2px solid black",
-          borderRadius: "10px",
-          color: "white",
-          width: "95%",
-          boxShadow: 3,
-          mx: "auto",
-        }}
+    <Box
+      sx={{
+        p: 4,
+        marginLeft: "-2rem",
+        paddingRight: 8,
+        height: "calc(100vh - 150px)",
+        overflowY: "auto",
+      }}
+    >
+      {/* Header */}
+      <Typography variant="h4" fontWeight={600} gutterBottom>
+        Applicant Dashboard
+      </Typography>
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{ marginBottom: "1rem" }}
+        gutterBottom
       >
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            height: "50px",
-            justifyContent: "space-between",
-            alignItems: "center",
-            px: 2,
-          }}
-        >
-          <Typography sx={{ fontSize: "20px", fontFamily: "Arial Black" }}>
-            Applicant ID: <span style={{ textDecoration: "underline" }}>{applicantID || "N/A"}</span>
-          </Typography>
+        Date: {formattedDate}
+      </Typography>
 
-
-          <Typography sx={{ fontSize: "20px", fontFamily: "Arial Black" }}>
-            Applicant Name:{" "}
-            <span style={{ textDecoration: "underline" }}>
-              {person.last_name?.toUpperCase()}, {person.first_name?.toUpperCase()} {person.middle_name?.toUpperCase()} {person.extension_name?.toUpperCase()}
-            </span>
-          </Typography>
-
-        </Box>
-      </Box>
-
-
-      <Box
-        sx={{
-          backgroundColor: "#f1f1f1",
-          border: "2px solid black",
-          padding: 4,
-          borderRadius: "10px",
-          width: "95%",
-          boxShadow: 3,
-          mx: "auto",
-        }}
-      >
-        <Typography variant="h4" textAlign="center" fontWeight={600} gutterBottom>
-          Application Procedure
-        </Typography>
-
-        {/* Step Chevrons */}
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "nowrap",        // ❌ prevent wrapping
-            justifyContent: "space-between",
-            width: "100%",
-            marginLeft: "10px",
-          }}
-        >
-          {steps.map((step, index) => (
-            <Box
-              key={index}
-              sx={{
-                width: "12.3%",
-                textAlign: "center",
-                marginLeft: "-10px",
-              }}
-            >
-              <StepIcon style={{ marginLeft: "-20px", }} label={step.label} color={step.color} />
-              <Card
-                sx={{
-                  backgroundColor: "#fff",
-                  borderRadius: 2,
-                  boxShadow: 3,
-                  marginTop: "10px",
-                  paddingLeft: "-20px",
-                  width: "150px",
-                  minHeight: "200px",
-                  mx: "auto",
-                  transition: "transform 0.2s ease",
-                  "&:hover": { transform: "scale(1.03)" },
-                }}
-              >
-
-              </Card>
-            </Box>
-          ))}
-        </Box>
-
-        {/* Additional Steps (Schedule, Admission, Interview, etc.) */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            marginTop: "5px",
-            width: "97.9%",
-            marginLeft: "30px",
-          }}
-        >
-          <StepIcon label="Examination Schedule" color="#234A8F" />
-
-          <Box
-            sx={{
-              backgroundColor: "#f1f1f1",
-
-              padding: "10px",
-              minHeight: "60px",
-              height: "90px",
-              fontSize: "13px",
-              flex: 1,
-              marginLeft: "100px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
-            {/* First Row: Date and Room */}
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography sx={{ fontWeight: "bold", minWidth: "60px" }}>Date:</Typography>
-              <Box sx={{ width: "450px" }} /> {/* Gap */}
-              <Typography sx={{ fontWeight: "bold" }}>Room:</Typography>
-            </Box>
-
-            {/* Second Row: Time */}
-            <Box sx={{ marginTop: "5px" }}>
-              <Typography sx={{ fontWeight: "bold" }}>Time:</Typography>
-            </Box>
-          </Box>
-        </Box>
-
-        {/* Admission & Entrance Exam */}
-        <Box
-          sx={{ display: "flex", alignItems: "center", marginTop: "5px", width: "97.9%", marginLeft: "30px" }}
-        >
-          <StepIcon label="Admission & Entrance Exam" color="#F0C03F" />
-          <Card
-            sx={{
-              backgroundColor: "#fff",
-              borderRadius: 2,
-              boxShadow: 3,
-              marginTop: "10px",
-              marginLeft: "100px",
-              flex: 1,
-              minHeight: "100px",
-              transition: "transform 0.2s ease",
-              "&:hover": { transform: "scale(1.03)" },
-            }}
-          >
+      <Grid container spacing={3}>
+        {/* Applicant Information */}
+        <Grid item xs={12}>
+          <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2 }}>
             <CardContent>
-
+              <Stack direction="row" alignItems="center" spacing={2} mb={2}>
+                {!person?.profile_image ? (
+                  <PersonIcon sx={{ color: "maroon" }} fontSize="large" />
+                ) : (
+                  <Avatar
+                    src={`http://localhost:5000/uploads/${person.profile_image}`}
+                    sx={{ width: 50, height: 50 }}
+                  />
+                )}
+                <Box>
+                  <Typography variant="h5" fontWeight={600}>
+                    {person.last_name?.toUpperCase()}, {person.first_name}{" "}
+                    {person.middle_name} {person.extension}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Applicant ID: {applicantID || "N/A"}
+                  </Typography>
+                </Box>
+              </Stack>
+              <Divider sx={{ mb: 2 }} />
+              <Typography variant="subtitle2" color="text.secondary">
+                Application Status
+              </Typography>
+              <Typography fontWeight={500}>Your application is registered.</Typography>
             </CardContent>
           </Card>
-        </Box>
+        </Grid>
 
-        {/* Interview */}
-        <Box
-          sx={{ display: "flex", alignItems: "center", marginTop: "5px", width: "97.9%", marginLeft: "30px" }}
-        >
-          <StepIcon label="Interview" color="#4B83C3" />
-          <Card
-            sx={{
-              backgroundColor: "#fff",
-              borderRadius: 2,
-              boxShadow: 3,
-              marginTop: "10px",
-              marginLeft: "100px",
-              flex: 1,
-              minHeight: "100px",
-              transition: "transform 0.2s ease",
-              "&:hover": { transform: "scale(1.03)" },
-            }}
-          >
-            <CardContent>
-
+        {/* Application Steps */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, minHeight: 180 }}>
+            <CardContent sx={{ textAlign: "center" }}>
+              <DescriptionIcon sx={{ color: "maroon" }} fontSize="large" />
+              <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
+                Document Submitted
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Application is on process.
+              </Typography>
             </CardContent>
           </Card>
-        </Box>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, minHeight: 180 }}>
+            <CardContent sx={{ textAlign: "center" }}>
+              <AssignmentTurnedInIcon sx={{ color: "maroon" }} fontSize="large" />
+
+              <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
+                Admission / Entrance Exam
+              </Typography>
+
+              {/* Info Text */}
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                Check schedule and results of your exam.
+              </Typography>
+
+              {/* Exam Schedule */}
+              <Typography variant="body2" sx={{ fontWeight: "bold", color: "maroon" }}>
+                📅 Date: March 15, 2025
+              </Typography>
+              <Typography variant="body2" sx={{ fontWeight: "bold", color: "maroon" }}>
+                🏫 Room: ITC Building - Room 203
+              </Typography>
+              <Typography variant="body2" sx={{ fontWeight: "bold", color: "maroon" }}>
+                ⏰ Time: 9:00 AM – 12:00 NN
+              </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold", color: "maroon" }}>
+                Remarks:
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, minHeight: 180 }}>
+            <CardContent sx={{ textAlign: "center" }}>
+              <EventIcon sx={{ color: "maroon" }} fontSize="large" />
+              <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
+                Interview Schedule
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                View your assigned interview slot.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
 
         {/* Qualifying Exam / Aptitude Test */}
-        <Box
-          sx={{ display: "flex", alignItems: "center", marginTop: "5px", width: "97.9%", marginLeft: "30px" }}
-        >
-          <StepIcon label="Qualifying Exam/Aptitude Test" color="#4CAF50" />
-          <Card
-            sx={{
-              backgroundColor: "#fff",
-              borderRadius: 2,
-              boxShadow: 3,
-              marginTop: "10px",
-              marginLeft: "100px",
-              flex: 1,
-              minHeight: "100px",
-              transition: "transform 0.2s ease",
-              "&:hover": { transform: "scale(1.03)" },
-            }}
-          >
-            <CardContent>
-
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, minHeight: 180 }}>
+            <CardContent sx={{ textAlign: "center" }}>
+              <SchoolIcon sx={{ color: "maroon" }} fontSize="large" />
+              <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
+                Qualifying Exam / Aptitude Test
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                View your exam schedule and results.
+              </Typography>
             </CardContent>
           </Card>
-        </Box>
+        </Grid>
+
+        {/* College Approval */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, minHeight: 180 }}>
+            <CardContent sx={{ textAlign: "center" }}>
+              <CheckCircleIcon sx={{ color: "maroon" }} fontSize="large" />
+              <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
+                College Approval
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Track your application approval status.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Medical Submitted */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, minHeight: 180 }}>
+            <CardContent sx={{ textAlign: "center" }}>
+              <LocalHospitalIcon sx={{ color: "maroon" }} fontSize="large" />
+              <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
+                Medical Submitted
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Check the status of your medical records.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Applicant Status */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2, minHeight: 180 }}>
+            <CardContent sx={{ textAlign: "center" }}>
+              <PersonIcon sx={{ color: "maroon" }} fontSize="large" />
+              <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
+                Applicant Status
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                View the current status of your application.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
 
         {/* Announcement */}
-        <Box
-          sx={{ display: "flex", alignItems: "center", marginTop: "5px", width: "97.9%", marginLeft: "30px" }}
-        >
-          <StepIcon label="Announcement" color="#00ACC1" />
-          <Card
-            sx={{
-              backgroundColor: "#fff",
-              borderRadius: 2,
-              boxShadow: 3,
-              marginTop: "10px",
-              marginLeft: "100px",
-              flex: 1,
-              minHeight: "100px",
-              transition: "transform 0.2s ease",
-              "&:hover": { transform: "scale(1.03)" },
-            }}
-          >
+        <Grid item xs={12}>
+          <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2 }}>
             <CardContent>
-
+              <Typography sx={{ textAlign: "center" }} variant="h6" gutterBottom>
+                Announcement
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              <Typography variant="body2" color="text.secondary">
+                Stay tuned for updates on admission results, schedules, and
+                other important notices.
+              </Typography>
             </CardContent>
           </Card>
-        </Box>
-
-      </Box>
+        </Grid>
+      </Grid>
     </Box>
   );
 };

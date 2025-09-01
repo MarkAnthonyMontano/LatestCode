@@ -10,7 +10,9 @@ import {
   TableContainer,
   Container,
   TableHead,
-  TableRow
+  TableRow,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -31,6 +33,7 @@ const RequirementUploader = () => {
   const [uploads, setUploads] = useState([]);
   const [userID, setUserID] = useState('');
   const [selectedFiles, setSelectedFiles] = useState({});
+  const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
   useEffect(() => {
     const id = localStorage.getItem('person_id');
@@ -52,7 +55,7 @@ const RequirementUploader = () => {
       const rebuiltSelectedFiles = {};
       uploadsData.forEach((upload) => {
         const description = upload.description.toLowerCase();
-        const filename = upload.original_name; // ✅ use safe original name
+        const filename = upload.original_name;
 
         if (description.includes('form 138')) rebuiltSelectedFiles['Form138'] = filename;
         if (description.includes('good moral')) rebuiltSelectedFiles['GoodMoralCharacter'] = filename;
@@ -62,11 +65,20 @@ const RequirementUploader = () => {
       });
 
       setSelectedFiles(rebuiltSelectedFiles);
+
+      // ✅ Check if all required docs are uploaded
+      const allRequired = [...requiredDocs, vaccineDoc].every(doc => rebuiltSelectedFiles[doc.key]);
+      if (allRequired) {
+        setSnack({
+          open: true,
+          message: "🎉 Congratulations! You have successfully confirmed your slot at Eulogio Amang Rodriguez Institute of Science and Technology.",
+          severity: "success"
+        });
+      }
     } catch (err) {
       console.error('Fetch uploads failed:', err);
     }
   };
-
 
   const handleUpload = async (key, file) => {
     if (!file) return;
@@ -79,12 +91,12 @@ const RequirementUploader = () => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('requirements_id', requirementId);
-    formData.append('person_id', userID); // ✅ Correctly send person_id in body
+    formData.append('person_id', userID);
 
     try {
       await axios.post('http://localhost:5000/upload', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data' // ✅ No need for 'x-person-id'
+          'Content-Type': 'multipart/form-data'
         }
       });
 
@@ -115,79 +127,41 @@ const RequirementUploader = () => {
         headers: { 'x-person-id': userID }
       });
 
-      // Refresh uploaded files list
       fetchUploads(userID);
-
-      // Also remove file name from selectedFiles
-      const deletedUpload = uploads.find((u) => u.upload_id === uploadId);
-      if (deletedUpload) {
-        const matchedKey = Object.keys(selectedFiles).find((key) =>
-          deletedUpload.description.toLowerCase().includes(
-            requiredDocs.concat(vaccineDoc).find((doc) => doc.key === key)?.label.toLowerCase() || ''
-          )
-        );
-
-        if (matchedKey) {
-          setSelectedFiles((prev) => {
-            const updated = { ...prev };
-            delete updated[matchedKey];
-            return updated;
-          });
-        }
-      }
     } catch (err) {
       console.error('Delete error:', err);
       alert('Failed to delete. Please try again.');
     }
   };
 
+  const handleClose = (_, reason) => {
+    if (reason === "clickaway") return;
+    setSnack(prev => ({ ...prev, open: false }));
+  };
 
   const renderRow = (doc) => {
     const uploaded = uploads.find((u) =>
       u.description.toLowerCase().includes(doc.label.toLowerCase())
     );
 
-    // 🔒 Disable right-click
-    document.addEventListener('contextmenu', (e) => e.preventDefault());
-
-    // 🔒 Block DevTools shortcuts silently
-    document.addEventListener('keydown', (e) => {
-      const isBlockedKey =
-        e.key === 'F12' ||
-        e.key === 'F11' ||
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
-        (e.ctrlKey && e.key === 'U');
-
-      if (isBlockedKey) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    });
-
     return (
-
       <TableRow key={doc.key}>
-        {/* Document label */}
         <TableCell sx={{ fontWeight: 'bold', width: '25%', border: "2px solid maroon" }}>{doc.label}</TableCell>
-
         <TableCell sx={{ width: '25%', border: "2px solid maroon", textAlign: "Center" }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
-            {/* Fixed wrapper to prevent shifting */}
             <Box sx={{ width: '220px', flexShrink: 0, textAlign: "center" }}>
               {selectedFiles[doc.key] ? (
                 <Box
                   sx={{
                     backgroundColor: '#e0e0e0',
-
                     padding: '6px 12px',
                     borderRadius: '4px',
                     fontSize: '14px',
                     fontWeight: 'bold',
                     height: '40px',
-                    textAlign: "Center",
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'Center',
+                    justifyContent: 'center',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -228,9 +202,7 @@ const RequirementUploader = () => {
           </Box>
         </TableCell>
 
-
         <TableCell sx={{ width: "25%", border: "2px solid maroon" }}>
-          {/* Remarks */}
           <Typography
             sx={{
               fontStyle: uploaded?.remarks ? "normal" : "italic",
@@ -240,7 +212,6 @@ const RequirementUploader = () => {
             {uploaded?.remarks || ""}
           </Typography>
 
-          {/* Status (Only if Approved or Disapproved) */}
           {uploaded?.status == 1 || uploaded?.status == 2 ? (
             <Typography
               sx={{
@@ -255,9 +226,6 @@ const RequirementUploader = () => {
           ) : null}
         </TableCell>
 
-
-
-        {/* Preview */}
         <TableCell sx={{ width: '10%', border: "2px solid maroon" }}>
           {uploaded && (
             <Button
@@ -278,7 +246,6 @@ const RequirementUploader = () => {
           )}
         </TableCell>
 
-        {/* Delete */}
         <TableCell sx={{ width: '10%', border: "2px solid maroon" }}>
           {uploaded && (
             <Button
@@ -300,13 +267,23 @@ const RequirementUploader = () => {
           )}
         </TableCell>
       </TableRow>
-
     );
   };
 
   return (
     <Box sx={{ height: "calc(100vh - 150px)", overflowY: "auto", paddingRight: 1, backgroundColor: "transparent" }}>
-
+      {/* ✅ Snackbar */}
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity={snack.severity} onClose={handleClose} sx={{ width: "100%" }}>
+          {snack.message}
+        </Alert>
+      </Snackbar>
+      
       <Box
         sx={{
           display: "flex",
